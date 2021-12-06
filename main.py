@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import render_template, jsonify
-from lib.data_manager import DataManager
+from core.data_manager import DataManager
 import config
 
 

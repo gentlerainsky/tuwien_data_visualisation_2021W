@@ -1,10 +1,25 @@
 {% extends "base.html" %}
 {% block stylesheet %}
-  <link href="{{ url_for('static', filename='css/choropleth.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
-  <svg id="choropleth" width="1300" height="800"></svg>
+<div id="control-panel-container" class="row">
+  <!–– Control Panel -->
+  <div class="col">
+    Control Panel
+  </div>
+</div>
+<div id="visualization-container" class="row">
+  <div class="col">
+    <!-- Choropleth -->
+    <svg id="choropleth"></svg>
+  </div>
+  <div class="col">
+    <!-- Bar/Line Chart -->
+    <svg id="chart"></svg>
+  </div>
+</div>
 {% endblock content %}
 
 {% block script %}
@@ -12,4 +27,9 @@
   <script src="https://d3js.org/topojson.v2.min.js"></script>
   <script src="https://d3js.org/d3-queue.v3.min.js"></script>
   <script src="{{ url_for('static', filename='js/choropleth.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bar_chart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/line_chart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/control_panel.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% endblock script %}
