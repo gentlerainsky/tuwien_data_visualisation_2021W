@@ -1,25 +1,202 @@
 {% extends "base.html" %}
 {% block stylesheet %}
-  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-<div id="control-panel-container" class="row">
-  <!–– Control Panel -->
-  <div class="col">
-    Control Panel
+  <div class="row">
+    <div class="col">
+      <h1>London Police Stop & Search Dataset Visualisation</h1>
+    </div>
   </div>
-</div>
-<div id="visualization-container" class="row">
-  <div class="col">
-    <!-- Choropleth -->
-    <svg id="choropleth"></svg>
+  <div id="control-panel-container" class="row">
+    <!–– Control Panel -->
+    <div class="col-sm-6">
+      <div class="row">
+        <h3>Data Filter</h3>
+      </div>
+      <div class="row">
+        <div class="row">
+          <div class="col-3">
+            <select class="form-select form-select-sm" id="search_type_filter">
+              <option value="All" selected>All Search Type</option>
+              <option value="Person and Vehicle search">Person and Vehicle search</option>
+              <option value="Person search">Person search</option>
+              <option value="Vehicle search'">Vehicle search'</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <select class="form-select form-select-sm" id="gender_filter">
+              <option value="All" selected>All Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <select class="form-select form-select-sm" id="age_filter">
+              <option value="All" selected>All Age Range</option>
+              <option value="under 10">under 10</option>
+              <option value="18-24">18-24</option>
+              <option value="25-34">25-34</option>
+              <option value="Over 34">Over 34</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-3">
+            <select class="form-select form-select-sm" id="legistration_filter">
+              <option value="All" selected>All Legistration</option>
+              <option value="Misuse of Drugs Act 1971 (section 23)">Misuse of Drugs Act 1971 (section 23)</option>
+              <option value="Police and Criminal Evidence Act 1984 (section 1)">Police and Criminal Evidence Act 1984
+                (section 1)
+              </option>
+              <option value="Firearms Act 1968 (section 47)">Firearms Act 1968 (section 47)</option>
+              <option value="Criminal Justice and Public Order Act 1994 (section 60)">Criminal Justice and Public
+                Order Act 1994 (section 60)
+              </option>
+            </select>
+          </div>
+          <div class="col-3">
+            <select class="form-select form-select-sm" id="officer_ethnicity_filter">
+              <option value="All" selected>All Officer-defined ethnicity</option>
+              <option value="White">White</option>
+              <option value="Black">Black</option>
+              <option value="Asian">Asian</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <select class="form-select form-select-sm" id="object_search_filter">
+              <option value="All" selected>All Object of search</option>
+              <option value="Controlled drugs">Controlled drugs</option>
+              <option value="Offensive weapons">Offensive weapons</option>
+              <option value="Evidence of offences under the Act">Evidence of offences under the Act</option>
+              <option value="Stolen goods">Stolen goods</option>
+              <option value="Fireworks">Fireworks</option>
+              <option value="Articles for use in criminal damage">Articles for use in criminal damage</option>
+              <option value="Firearms">Firearms</option>
+              <option value="Anything to threaten or harm anyone">Anything to threaten or harm anyone</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-3">
+            <select class="form-select form-select-sm" id="outcome_filter">
+              <option value="All" selected>All Outcome</option>
+              <option value="Arrest">Arrest</option>
+              <option value="Community resolution">Community resolution</option>
+              <option value="A no further action disposal">A no further action disposal</option>
+              <option value="Summons / charged by post">Summons / charged by post</option>
+              <option value="Penalty Notice for Disorder">Penalty Notice for Disorder</option>
+              <option value="Caution (simple or conditional)">Caution (simple or conditional)</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <select class="form-select form-select-sm" id="self_ethnicity_filter">
+              <option value="All" selected>All Self-defined ethnicity</option>
+              <option value="Multiple ethnic groups - White and Black African">Multiple ethnic groups - White and
+                Black African
+              </option>
+              <option value="Black British - African', 'White - English">Black British - African', 'White - English
+              </option>
+              <option value="Multiple ethnic groups - White and Asian">Multiple ethnic groups - White and Asian
+              </option>
+              <option value="Other ethnic group - Not stated">Other ethnic group - Not stated</option>
+              <option value="African">African</option>
+              <option value="White - Any other White background">White - Any other White background</option>
+              <option value="Asian British - Any other Asian background">Asian</option>
+              <option value="Asian British - Indian">Asian British - Indian</option>
+              <option value="Other ethnic group - Any other ethnic group">Other ethnic group - Any other ethnic
+                group
+              </option>
+              <option value="Black">Black</option>
+              <option value="Black British - Any other Black">Black British - Any other Black</option>
+              <option value="Multiple ethnic groups - Any other Mixed">Multiple ethnic groups - Any other Mixed
+              </option>
+              <option value="Caribbean">Caribbean</option>
+              <option value="Asian">Asian</option>
+              <option value="Multiple ethnic background">Multiple ethnic background</option>
+              <option value="White - Irish">White - Irish</option>
+              <option value="Asian British - Bangladeshi">Asian British - Bangladeshi</option>
+              <option value="British">British</option>
+              <option value="Scottish">Scottish</option>
+              <option value="Asian British - Pakistani">Asian British - Pakistani</option>
+              <option value="Mixed">Mixed</option>
+              <option value="Welsh">Welsh</option>
+              <option value="Black British - Caribbean">Black British - Caribbean</option>
+              <option value="Northern Irish">Northern Irish</option>
+              <option value="Asian British - Chinese">'Asian British - Chinese</option>
+              <option value="Multiple ethnic groups - White and Black Caribbean">Multiple ethnic groups - White and
+                Black Caribbean
+              </option>
+              <option value="Caribbean background">Caribbean background</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="row">
+        <div class="col">
+          <h3>Detail Plot</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <div class="form-check">
+            <input class="btn-check" type="radio" name="PlotSwitcher" id="LinePlotRadioBox" value="line" checked>
+            <label class="btn btn-outline-primary" for="LinePlotRadioBox">Line Plot</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label class="col-form-label" for="LinePlotRadioBox">Aggregate Time Frame</label>
+        </div>
+        <div class="col-5">
+          <select class="form-select form-select-sm" id="line_aggregate_time_frame">
+            <option value="week" selected>Week</option>
+            <option value="month">Month</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <div class="form-check">
+            <input class="btn-check" type="radio" name="PlotSwitcher" id="BarPlotRadioBox" value="bar">
+            <label class="btn btn-outline-primary" for="BarPlotRadioBox">Bar Plot</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label class="col-form-label" for="LinePlotRadioBox">Variable</label>
+        </div>
+        <div class="col-5">
+          <select class="form-select form-select-sm" id="bar_variable">
+            <option value="Gender" selected>Gender</option>
+            <option value="Type">Search Type</option>
+            <option value="Age range">Age range</option>
+            <option value="Self-defined ethnicity">Self-defined ethnicity</option>
+            <option value="Officer-defined ethnicity">Officer-defined ethnicity</option>
+            <option value="Legislation">Legislation</option>
+            <option value="Object of search">Object of search</option>
+            <option value="Outcome">Outcome</option>
+          </select>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="col">
-    <!-- Bar/Line Chart -->
-    <svg id="chart"></svg>
+  <div id="visualization-container" class="row">
+    <div class="col">
+      <!-- Choropleth -->
+      <svg id="choropleth"></svg>
+    </div>
+    <div class="col">
+      <!-- Bar/Line Chart -->
+      <svg id="chart"></svg>
+    </div>
   </div>
-</div>
 {% endblock content %}
 
 {% block script %}

@@ -1,88 +1,105 @@
-$(function () {
-  const svg = d3.select("#choropleth")
-  const $choropleth = $('#choropleth')
-  const width = $choropleth.width();
-  const height = $choropleth.height();
-  // const path = d3.geoPath();
-  const projection = d3.geoMercator()
-    // center latitude / longitude of London
-    .center([-0.1, 51.49])
-    // scale the area so it can be plot
-    .scale(Math.pow(2, 18) / (2 * Math.PI))
-    .translate([width / 2, height / 2])
-  const colorScale = d3.scaleThreshold()
-    .domain([0, 1 / 5, 1 / 5, 2 / 5, 2 / 5, 3 / 5, 3 / 5, 4 / 5, 4 / 5, 1])
-    .range(d3.schemeRdYlGn[10].reverse());
+const mouseOver = function (d) {
+  d3.selectAll(".Country")
+    .transition()
+    .duration(50)
+    .attr("stroke-width", 0.5)
 
-  Promise.all([
-    d3.json("/static/geojson/london_boroughs.json"),
-    d3.json("/api/choropleth")
-  ]).then(function (result) {
-    const topo = result[0]
-    const data = result[1]
+  d3.select(this)
+    .transition()
+    .duration(50)
+    .attr("stroke-width", 5)
+}
 
-    const mouseOver = function (d) {
-      d3.selectAll(".Country")
-        .transition()
-        .duration(100)
-        .style("opacity", .5)
-      d3.select(this)
-        .transition()
-        .duration(100)
-        .style("opacity", 1)
-        // .style("stroke-width", 10)
-        .style("stroke", "black")
-    }
-    const mouseLeave = function (d) {
-      d3.selectAll(".Country")
-        .transition()
-        .duration(100)
-        // .style("stroke-width", 0)
-        .style("opacity", .8)
-      d3.select(this)
-        .transition()
-        .duration(100)
-        // .style("stroke", "transparent")
-        .style("stroke", "black")
-        .style("stroke-width", 1)
-        .style("opacity", .8)
-    }
+const mouseLeave = function (d) {
+  d3.selectAll(".Country")
+    .transition()
+    .duration(50)
+    .attr("stroke-width", 0.5)
 
-    const mouseClick = function (target, data) {
-      console.log('click', target)
+  d3.select(this)
+    .transition()
+    .duration(50)
+    .attr("stroke-width", 0.5)
+}
+
+class Choropleth {
+  constructor(tagId, topo) {
+    this.svg = d3.select('#choropleth')
+    this.$choropleth = $('#choropleth')
+    this.width = this.$choropleth.width();
+    this.height = this.$choropleth.height();
+    // const path = d3.geoPath();
+    this.projection = d3.geoMercator()
+      // center latitude / longitude of London
+      .center([-0.1, 51.49])
+      // scale the area so it can be plot
+      .scale(Math.pow(2, 18) / (2 * Math.PI))
+      .translate([this.width / 2, this.height / 2])
+    this.colorScale = d3.scaleThreshold()
+      .domain([0, 1 / 5, 1 / 5, 2 / 5, 2 / 5, 3 / 5, 3 / 5, 4 / 5, 4 / 5, 1])
+      .range(d3.schemeRdYlGn[10].reverse());
+
+    this.data = null
+    this.topo = topo
+    this.controlPanel = null
+    this.currentBorough = null
+  }
+
+  registerControlPanel(controlPanel){
+    this.controlPanel = controlPanel
+  }
+
+  update(data) {
+    this.data = data.data
+    this.draw()
+  }
+
+  draw() {
+    const that = this
+    const clickHandler = function (target, data) {
       if (data) {
-        console.log('borough_id', data.properties.id)
-      } else {
+        if (that.currentBorough !== data.properties.id) {
+          that.currentBorough = data.properties.id
+          that.controlPanel.filterBorough(data.properties.id)
+          console.log('borough_id', data.properties.id)
+        }
+        target.stopPropagation()
+      } else if (that.currentBorough) {
+        that.currentBorough = null
+        that.controlPanel.filterBorough()
         console.log('click no data')
+        target.stopPropagation()
       }
     }
-    //
-    // const testClick = function (target, data) {
-    //   console.log('click', target)
-    //   console.log('data', data)
-    // }
-    svg.style("background", "grey")
-      .on("click", mouseClick)
 
-    svg.append("g")
+    this.svg.style("background", "grey").on('click', clickHandler)
+
+    this.svg.append("g")
       .selectAll("path")
-      .data(topo.features)
+      .data(this.topo.features)
       .join("path")
       .attr("d", d3.geoPath()
-        .projection(projection)
+        .projection(this.projection)
       )
-      .attr("fill", function (d) {
-        d.total = data[d.properties.id]['percentile']
-        return colorScale(d.total);
+      .attr("fill", (d) => {
+        d.total = 0
+        if (this.data[d.properties.id]) {
+          d.total = this.data[d.properties.id]['percentile']
+        }
+        return this.colorScale(d.total);
       })
       .style("stroke", "transparent")
       .style("stroke", "black")
-      .attr("class", function (d) {
+      .attr("class", (d) => {
         return "Country"
       })
-      .style("opacity", .8)
+      .attr("stroke-width", 0.5)
       .on("mouseover", mouseOver)
       .on("mouseleave", mouseLeave)
-      .on("click", mouseClick)
-  })
-})
+      .on("click", clickHandler)
+  }
+
+  remove () {
+    this.svg.select('g').remove()
+  }
+}
