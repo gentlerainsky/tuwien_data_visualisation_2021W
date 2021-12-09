@@ -2,7 +2,7 @@
 
 The visualisation can be accessed online on Heroku free-tier (Until it is taken down.)
 
-[Visualisation on Heroku](https://police-stops-earch-vis.herokuapp.com/)
+[Visualisation on Heroku](https://police-stop-search-vis.herokuapp.com/)
 
 ## Development Detail Overview
 
