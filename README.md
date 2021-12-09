@@ -1,6 +1,7 @@
 # Police Stop & Search Data Visualisation
 
-The visualisation can be access online on Heroku free-tier (Until it is taken down.)
+The visualisation can be accessed online on Heroku free-tier (Until it is taken down.)
+
 [Visualisation on Heroku](https://police-stops-earch-vis.herokuapp.com/)
 
 ## Development Detail Overview
