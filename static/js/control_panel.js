@@ -11,7 +11,8 @@ class ControlPanel {
       'period': 'week'
     }
     this.barPlotSetting = {
-      'field': 'Gender'
+      'field': 'Gender',
+      'useBarTimeframe': false
     }
     this.currentPlot = 'line'
   }
@@ -24,6 +25,19 @@ class ControlPanel {
       ...this.barPlotSetting
     }
     fetch(`${url}?options=${JSON.stringify(options)}`).then(response => response.json()).then(callback)
+  }
+
+  togglePlotControl(isLinePlot) {
+    console.log('isLinePlot', isLinePlot)
+    if (isLinePlot) {
+      $('#bar_variable').attr('disabled', true)
+      $('#bar_timeframe_checkbox').attr('disabled', true)
+      $('#sort_category_checkbox').attr('disabled', true)
+    } else {
+      $('#bar_variable').removeAttr('disabled')
+      $('#bar_timeframe_checkbox').removeAttr('disabled')
+      $('#sort_category_checkbox').removeAttr('disabled')
+    }
   }
 
   update () {
@@ -48,6 +62,7 @@ class ControlPanel {
     $('input[name="PlotSwitcher"]').on('change', function () {
       if ($('input[name="PlotSwitcher"]:checked')) {
         const plotType = $(this).val()
+        that.togglePlotControl(plotType === 'line')
         if (plotType === 'line') {
           that.currentPlot = 'line'
           that.chart.drawLineChart()
@@ -98,9 +113,26 @@ class ControlPanel {
     })
   }
 
+  registerBarTimeFrameCheckBox() {
+    const that = this
+    $('input[name="BarTimeframeCheckbox"]').on('change', function () {
+      that.barPlotSetting['useBarTimeframe'] = $('input[name="BarTimeframeCheckbox"]:checked').length > 0
+      that.update()
+    })
+  }
+
+  registerBarSortCategoryCheckBox() {
+    const that = this
+    $('input[name="SortCategoryCheckbox"]').on('change', function () {
+      that.chart.setBarChartSortCategory($('input[name="SortCategoryCheckbox"]:checked').length > 0)
+    })
+  }
+
   registerEventHandler() {
     this.registerPlotSwitcherHandler()
     this.registerFilterHandler()
     this.registerPlotSettingHandler()
+    this.registerBarTimeFrameCheckBox()
+    this.registerBarSortCategoryCheckBox()
   }
 }

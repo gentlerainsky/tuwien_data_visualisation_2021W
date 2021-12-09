@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block content %}
-  <div class="row">
+  <div id="app-headline-container" class="row">
     <div class="col">
       <h1>London Police Stop & Search Dataset Visualisation</h1>
     </div>
@@ -36,9 +36,10 @@
             <select class="form-select form-select-sm" id="age_filter">
               <option value="All" selected>All Age Range</option>
               <option value="under 10">under 10</option>
+              <option value="10-17">10-17</option>
               <option value="18-24">18-24</option>
               <option value="25-34">25-34</option>
-              <option value="Over 34">Over 34</option>
+              <option value="over 34">Over 34</option>
             </select>
           </div>
         </div>
@@ -141,39 +142,39 @@
           <h3>Detail Plot</h3>
         </div>
       </div>
-      <div class="row">
-        <div class="col-3">
+      <div class="row PlotControlGroup">
+        <div class="col-2">
           <div class="form-check">
             <input class="btn-check" type="radio" name="PlotSwitcher" id="LinePlotRadioBox" value="line" checked>
             <label class="btn btn-outline-primary" for="LinePlotRadioBox">Line Plot</label>
           </div>
         </div>
-      </div>
-      <div class="row">
+{#      </div>#}
+{#      <div class="row">#}
         <div class="col-3">
           <label class="col-form-label" for="LinePlotRadioBox">Aggregate Time Frame</label>
         </div>
-        <div class="col-5">
+        <div class="col-3">
           <select class="form-select form-select-sm" id="line_aggregate_time_frame">
             <option value="week" selected>Week</option>
             <option value="month">Month</option>
           </select>
         </div>
       </div>
-      <div class="row">
-        <div class="col-3">
+      <div class="row PlotControlGroup">
+        <div class="col-2">
           <div class="form-check">
             <input class="btn-check" type="radio" name="PlotSwitcher" id="BarPlotRadioBox" value="bar">
             <label class="btn btn-outline-primary" for="BarPlotRadioBox">Bar Plot</label>
           </div>
         </div>
-      </div>
-      <div class="row">
+{#      </div>#}
+{#      <div class="row">#}
         <div class="col-3">
           <label class="col-form-label" for="LinePlotRadioBox">Variable</label>
         </div>
-        <div class="col-5">
-          <select class="form-select form-select-sm" id="bar_variable">
+        <div class="col-3">
+          <select class="form-select form-select-sm" id="bar_variable" disabled>
             <option value="Gender" selected>Gender</option>
             <option value="Type">Search Type</option>
             <option value="Age range">Age range</option>
@@ -184,15 +185,35 @@
             <option value="Outcome">Outcome</option>
           </select>
         </div>
+        <div class="col-3">
+          <div class="form-check">
+            <div class="row">
+              <div class="col">
+                <input class="form-check-input" type="checkbox" name="BarTimeframeCheckbox" id="bar_timeframe_checkbox" disabled>
+                <label class="form-check-label" for="bar_timeframe_checkbox">
+                  Group by Time Frame
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <input class="form-check-input" type="checkbox" name="SortCategoryCheckbox" id="sort_category_checkbox" disabled>
+                <label class="form-check-label" for="sort_category_checkbox">
+                  Sort by category
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   <div id="visualization-container" class="row">
-    <div class="col">
+    <div id="choropleth-container" class="col">
       <!-- Choropleth -->
       <svg id="choropleth"></svg>
     </div>
-    <div class="col">
+    <div id="chart-container" class="col">
       <!-- Bar/Line Chart -->
       <svg id="chart"></svg>
     </div>
@@ -200,9 +221,6 @@
 {% endblock content %}
 
 {% block script %}
-  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-  <script src="https://d3js.org/topojson.v2.min.js"></script>
-  <script src="https://d3js.org/d3-queue.v3.min.js"></script>
   <script src="{{ url_for('static', filename='js/choropleth.js') }}"></script>
   <script src="{{ url_for('static', filename='js/bar_chart.js') }}"></script>
   <script src="{{ url_for('static', filename='js/line_chart.js') }}"></script>

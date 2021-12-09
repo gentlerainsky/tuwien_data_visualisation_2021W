@@ -27,7 +27,7 @@ eth_df = pd.DataFrame(eth_dict)
 eth_df = pd.concat([data_df, eth_df], axis=1)
 
 # reverse geo-coding
-with open('./data/london_boroughs.json', 'r') as f:
+with open('./static/geojson/london_boroughs.json', 'r') as f:
     js = json.load(f)
 borough_df = eth_df.copy()
 borough_df['borough_id'] = 0

@@ -13,8 +13,16 @@ class Chart {
   drawBarChart() {
     this.lineChart.remove()
     this.barChart.init()
-    console.log('drawBarChart', this.barData)
-    this.barChart.update(this.barData.data)
+    this.barChart.update(this.barData)
+    this.barChart.draw()
+  }
+
+  setBarChartSortCategory(isSort) {
+    this.barChart.setSortCategory(isSort)
+    this.drawBarChart()
+    this.lineChart.remove()
+    this.barChart.init()
+    this.barChart.draw()
   }
 
   update(currentPlot, data) {

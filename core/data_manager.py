@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 class DataManager:
@@ -25,8 +26,10 @@ class DataManager:
         borough_case_df = pd.DataFrame({
             'cases_count': df[['borough_id', 'borough_name']].value_counts().dropna()
         })
+
         borough_case_df.index.name = 'borough_id'
-        borough_case_df['percentile'] = borough_case_df.rank(pct=True)
+        # borough_case_df['percentile'] = borough_case_df.rank(pct=True)
+        borough_case_df['percentile'] = borough_case_df / borough_case_df.max()
         borough_cases = borough_case_df.reset_index().to_dict(orient='records')
         result = {}
 
@@ -36,7 +39,11 @@ class DataManager:
                 'percentile': b['percentile'],
                 'borough_name': b['borough_name']
             }
-        return result
+        number_max_case = np.max(borough_case_df).cases_count
+        return {
+            'legend': [{ 'value': int(number_max_case / 5 * i), 'percentile': i * 20} for i in range(0, 5)],
+            'data': result
+        }
 
     def get_line_plot_data(self, df, options):
         result_df = df
@@ -48,17 +55,50 @@ class DataManager:
         data = result_df.reset_index().rename(
             columns={'borough_id': 'y', result_df.index.name: 'x'}
         )
+        x_lim = [0, 1]
+        y_lim = [0, 1]
+        if len(data) > 0:
+            x_lim = [int(data['x'].min()), int(data['x'].max())]
+            y_lim = [int(data['y'].min()), int(data['y'].max())]
         return {
-            'x_lim': [data['x'].min() * 0.9, data['x'].max() * 1.1],
-            'y_lim': [data['y'].min() * 0.9, data['y'].max() * 1.1],
+            'x_lim': x_lim,
+            'y_lim': y_lim,
             'data': data.to_dict(orient='records')
         }
+
+    def trim_string(self, string, length):
+        if len(string) > length:
+            return string[:length] + '...'
+        return string
+
     def get_bar_plot_data(self, df, options):
-        if 'field' in options:
-            df = df[options['field']].value_counts()
+        series = pd.Series()
+        period_name = ''
+        if 'useBarTimeframe' in options and options['useBarTimeframe'] and 'period' in options:
+            if ('field' in options) and options['useBarTimeframe']:
+                if options['period'] == 'week':
+                    period_name = 'Week'
+                    series = df[options['field']].groupby(df['Date'].dt.isocalendar().week).value_counts()
+                if options['period'] == 'month':
+                    period_name = 'Month'
+                    series = df[options['field']].groupby(df['Date'].dt.month).value_counts()
+        elif 'field' in options:
+            series = df[options['field']].value_counts()
         result = []
-        groups = df.keys().tolist()
-        values =df.values.tolist()
+        group_list = series.keys().tolist()
+        groups = []
+        for group in group_list:
+            if type(group) == str:
+                groups.append({
+                    'name': self.trim_string(group, 30)
+                })
+            else:
+                group_period, group_name = group
+                groups.append({
+                    'period': f'{period_name} {group_period}',
+                    'name': self.trim_string(group_name, 30)
+                })
+        values = series.values.tolist()
         for i in range(len(groups)):
             result.append({
                 'group': groups[i],
@@ -70,17 +110,19 @@ class DataManager:
         mask = self.get_filter_mask(options)
         result_df = self.data_df[mask]
         line_plot_data = self.get_line_plot_data(result_df, options)
+        choropleth_data = self.get_choropleth_data(result_df)
         result = {
             'choropleth': {
                 'meta': {
-                    'title': 'Choropleth of cases in London',
+                    'title': 'Choropleth (London Borough)',
+                    'legend': choropleth_data['legend'],
                 },
-                'data': self.get_choropleth_data(result_df),
+                'data': choropleth_data['data']
             },
             'line': {
                 'meta': {
                     'title': 'Trend of cases',
-                    'x_label': f'{options["period"]}',
+                    'x_label': f'{options["period"].capitalize()}',
                     'y_label': 'Total Cases',
                     'x_lim': line_plot_data['x_lim'],
                     'y_lim': line_plot_data['y_lim']
