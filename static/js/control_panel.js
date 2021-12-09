@@ -28,7 +28,6 @@ class ControlPanel {
   }
 
   togglePlotControl(isLinePlot) {
-    console.log('isLinePlot', isLinePlot)
     if (isLinePlot) {
       $('#bar_variable').attr('disabled', true)
       $('#bar_timeframe_checkbox').attr('disabled', true)
