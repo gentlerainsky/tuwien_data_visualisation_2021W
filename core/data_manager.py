@@ -27,21 +27,26 @@ class DataManager:
             'cases_count': df[['borough_id', 'borough_name']].value_counts().dropna()
         })
 
+        if len(borough_case_df) == 0:
+            return {
+                'legend': [],
+                'data': []
+            }
+
         borough_case_df.index.name = 'borough_id'
-        # borough_case_df['percentile'] = borough_case_df.rank(pct=True)
-        borough_case_df['percentile'] = borough_case_df / borough_case_df.max()
+        borough_case_df['percentage'] = borough_case_df / borough_case_df.max()
         borough_cases = borough_case_df.reset_index().to_dict(orient='records')
         result = {}
 
         for b in borough_cases:
             result[b['borough_id']] = {
                 'cases_count': b['cases_count'],
-                'percentile': b['percentile'],
+                'percentage': b['percentage'],
                 'borough_name': b['borough_name']
             }
         number_max_case = np.max(borough_case_df).cases_count
         return {
-            'legend': [{ 'value': int(number_max_case / 5 * i), 'percentile': i * 20} for i in range(0, 5)],
+            'legend': [{ 'value': int(number_max_case / 5 * i), 'percentage': i * 20} for i in range(0, 5)],
             'data': result
         }
 

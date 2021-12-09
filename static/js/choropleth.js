@@ -188,7 +188,7 @@ class Choropleth {
       .attr('fill', '#FFF')
       .attr('x', 60)
       .attr('y', function (d) {
-        return (300 - yLegend(d.percentile / 100) / 2) + 290 + 15
+        return (300 - yLegend(d.percentage / 100) / 2) + 290 + 15
       })
       .text(function (d) {
         let text = d.value
@@ -218,7 +218,7 @@ class Choropleth {
       .attr('fill', (d) => {
         d.total = 0
         if (this.data[d.properties.id]) {
-          d.total = this.data[d.properties.id]['percentile']
+          d.total = this.data[d.properties.id]['percentage']
         }
         return this.colorScale(d.total)
       })
