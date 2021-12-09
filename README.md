@@ -5,6 +5,8 @@ The visualisation can be accessed online on Heroku free-tier (Until it is taken 
 [Visualisation on Heroku](https://police-stop-search-vis.herokuapp.com/)
 (Note. Heroku closes a running app after interactive for a while, so it might need some time to load up of the first try.)
 
+[Github Repository](https://github.com/gentlerainsky/tuwien_data_visualisation_2021W)
+
 ## Development Detail Overview
 
 The app is developed with Python version 3.8 and Ubuntu (20.04.3 LTS) on Window 10 via WSL.
