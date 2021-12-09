@@ -10,6 +10,7 @@ numpy = "*"
 geopandas = "*"
 geopy = "*"
 shapely = "*"
+gunicorn = "*"
 
 [dev-packages]
 
