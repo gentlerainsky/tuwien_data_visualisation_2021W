@@ -27,7 +27,7 @@ function drawTooltip(g, value) {
 
   g.style('display', null)
     .style('pointer-events', 'none')
-    .style('font', '14px sans-serif')
+    .style('font', '14px')
 
   const path = g
     .selectAll('path')
@@ -150,7 +150,6 @@ class Choropleth {
     const g = this.svg.append('g')
 
     g.append('text')
-      .attr('font-family', 'sans-serif')
       .attr('x', 25)
       .attr('y', 450)
       .attr('fill', '#FFF')
@@ -185,6 +184,7 @@ class Choropleth {
       .append('text')
       .attr('class', 'legend-text')
       .attr('font-size', '12px')
+      .style('font-weight', 'bold')
       .attr('fill', '#FFF')
       .attr('x', 60)
       .attr('y', function (d) {

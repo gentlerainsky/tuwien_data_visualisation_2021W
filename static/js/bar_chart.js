@@ -31,7 +31,7 @@ function drawTooltip(g, value) {
 
   g.style('display', null)
     .style('pointer-events', 'none')
-    .style('font', '14px sans-serif')
+    .style('font', '14px')
 
   const path = g
     .selectAll('path')
@@ -95,6 +95,8 @@ class BarChart {
     this.metaData = null
     this.data = null
     this.sortedData = null
+    this.last_mouse_x = 0
+    this.last_mouse_y = 0
   }
 
   getGroupName(d) {
@@ -162,8 +164,8 @@ class BarChart {
 
     this.xAxis.call(d3.axisBottom(this.x))
       .selectAll(".tick text")
-      .attr("transform", "translate(15, 15)rotate(90)")
-      .style("text-anchor", "start")
+      .attr("transform", "translate(-15, 15)rotate(-90)")
+      .style("text-anchor", "end")
       .call(wrap, xScale.bandwidth())
 
     this.y.domain([0, d3.max(data, d => d.value)]);

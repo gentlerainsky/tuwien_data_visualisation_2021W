@@ -79,7 +79,7 @@ class LineChart {
         }))
       .attr("fill", "none")
       .attr("stroke", "steelblue")
-      .attr("stroke-width", 2.5)
+      .attr("stroke-width", 4)
   }
 
   remove () {
