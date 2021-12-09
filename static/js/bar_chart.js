@@ -26,6 +26,63 @@ function wrap(text, width) {
   })
 }
 
+function drawTooltip(g, value) {
+  if (!value) return g.style('display', 'none')
+
+  g.style('display', null)
+    .style('pointer-events', 'none')
+    .style('font', '14px sans-serif')
+
+  const path = g
+    .selectAll('path')
+    .data([null])
+    .join('path')
+    .attr('fill', 'black')
+    .attr('stroke', 'black')
+
+  const text = g
+    .selectAll('text')
+    .data([null])
+    .join('text')
+    .style('fill', 'white')
+    .call(function (text) {
+      text.selectAll('tspan')
+        .data((value + '').split('/\n/'))
+        .join('tspan')
+        .attr('x', 0)
+        .attr('y', function (d, i) {
+          return i * 1.1 + 'em'
+        })
+        .style('font-weight', function (_, i) {
+          return i ? null : 'bold'
+        })
+        .text(function (d) {
+          return d
+        })
+    })
+
+  const x = text.node().getBBox().x
+  const y = text.node().getBBox().y
+  const w = text.node().getBBox().width
+  const h = text.node().getBBox().height
+
+  text.attr(
+    'transform',
+    'translate(' + -w / 2 + ',' + (15 - y) + ')'
+  )
+  path.attr(
+    'd',
+    'M' +
+    (-w / 2 - 10) +
+    ',5H-5l5,-5l5,5H' +
+    (w / 2 + 10) +
+    'v' +
+    (h + 20) +
+    'h-' +
+    (w + 20) +
+    'z'
+  )
+}
 
 class BarChart {
   constructor(tagId) {
@@ -74,7 +131,7 @@ class BarChart {
       .style("font-size", "15px")
   }
 
-  update (plotData) {
+  update(plotData) {
     this.metaData = plotData.meta
     this.data = [...plotData.data]
     this.sortedData = [...plotData.data]
@@ -86,7 +143,8 @@ class BarChart {
     })
   }
 
-  draw () {
+  draw() {
+    const that = this
     let data = this.data
     if (this.isSortByCategory) {
       data = this.sortedData
@@ -138,10 +196,34 @@ class BarChart {
       .attr("height", d => this.height - this.y(d.value))
       .attr("fill", (d) => {
         return d3.interpolateRainbow(groupColors(d.group.name))
+      }).on('mouseover.tooltip', function (event, data) {
+        let text = data.group.name
+        if (data.group.period) {
+          text += `/\n/${data.group.period}`
+        }
+        text += `/\n/${data.value} cases`
+        tooltip.call(drawTooltip, text)
+        d3.select(this)
+          .attr('stroke-width', 3)
+          .attr('stroke', 'black')
       })
+      .on('mousemove.tooltip', function (event) {
+        that.last_mouse_x = d3.pointer(event)[0]
+        that.last_mouse_y = d3.pointer(event)[1]
+        tooltip.attr('transform', `translate(${d3.pointer(event)[0]},${d3.pointer(event)[1]})`)
+      })
+      .on('mouseout.tooltip', function () {
+        tooltip.call(drawTooltip, null)
+        d3.select(this)
+          .attr('stroke', null)
+          .lower()
+      })
+    const tooltip = this.plot.append('g')
+      .attr('id', 'bar_tooltip')
+      .attr('transform', `translate(${this.last_mouse_x},${this.last_mouse_y})`)
   }
 
-  remove () {
-    this.svg.select('g').remove()
+  remove() {
+    this.svg.selectAll('g').remove()
   }
 }

@@ -245,9 +245,6 @@ class Choropleth {
           text += `/\n/${info.case_count} cases`
         }
         tooltip.call(drawTooltip, text)
-        d3.select(this)
-          .attr('stroke', 'red')
-          .raise()
       })
       .on('mousemove.tooltip', function (event) {
         that.last_mouse_x = d3.pointer(event)[0]
